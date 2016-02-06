@@ -16,11 +16,6 @@ router.get('/create', function (req, res) {
   res.sendfile('public/create.html');
 });
 
-// Angular App for playing a puzzle
-router.get('/play', function (req, res) {
-  res.sendfile('public/play.html');
-});
-
 router.get('/select', function(req, res) {
   Template.find(function(err, templates) {
     if (err) {
@@ -89,8 +84,45 @@ router.post('/template/:template_id/delete', function (req, res) {
   res.send({});
 });
 
-// Make move in game
+// Angular App for playing a puzzle
+router.get('/play/:template_id', function (req, res) {
+  res.sendfile('public/play.html');
+});
+
+// Initialize game in background
 router.post('/play/:template_id', function (req, res) {
+  var session = req.session;
+
+  // Store Game.id in session 
+  if (session.game_id) {
+    Game.findOne({
+      _id: session.game_id,
+      template_id: req.params.template_id
+    }).exec( function (err, game) {
+      if (err) {
+        sendBadRequest(res, err);
+      } else {
+        if (game) {
+          res.send({game: game});          
+        } else {
+          sendBadRequest(res, "Game not found");
+        }
+      }
+    });
+  } else {
+    var game = new Game({
+      session_id: session.id,
+      template_id: req.params.template_id
+    });
+    game.save();
+
+    session.game_id = game.id;
+    res.send({game: game});
+  }
+});
+
+// Make move in game
+router.post('/play/:template_id/move', function (req, res) {
   res.send({});
 });
 
