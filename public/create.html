@@ -20,13 +20,16 @@
 <body ng-controller="mainController as controller">
     <div class="container">
 
-        <div class="jumbotron text-center">
+        <div class="text-center">
             <h1>Create a Template</h1>
         </div>
 
+        <div ng-repeat="edge in template.edges track by $index">
+            <div class="text-center">{{ edge.node_a }} -> {{ edge.node_b }}</div>
+        </div>
+        <div class="text-center"><h4>Last word: {{ currentNode }}</h4></div>
         <div id="todo-form" class="row">
             <div class="col-sm-8 col-sm-offset-2 text-center">
-                <div>Current word: {{ currentNode }}<br></div>
                 <form ng-submit="addMove()">
                     <div class="form-group">
 

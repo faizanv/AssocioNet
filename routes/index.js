@@ -59,7 +59,7 @@ router.post('/template/:template_id/add', function (req, res) {
       if (err) {
         sendBadRequest(res, err);
       } else {
-        res.send(template);
+        res.send({template: template});
       }
     });
   } else {
