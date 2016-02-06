@@ -44,6 +44,12 @@ function mainController($scope, $http) {
     console.log("Delete move!");
   }
 
+  // $scope.textChange('ngKeystroke', function () {
+  //   return {
+  //     restrict: 'A'
+  //   }
+  // });
+
   activate();
 }
 

@@ -21,8 +21,7 @@ router.get('/select', function(req, res) {
     if (err) {
       res.send(err);
     } else {
-      console.log(templates);
-      res.render('select', {content: templates});
+      res.render('select', templates);
     }
   });
 });
