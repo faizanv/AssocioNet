@@ -26,11 +26,12 @@
 
         <div id="todo-form" class="row">
             <div class="col-sm-8 col-sm-offset-2 text-center">
-                <form ng-submit="controller.addMove()">
+                <div>Current word: {{ currentNode }}<br></div>
+                <form ng-submit="addMove()">
                     <div class="form-group">
 
                         <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
-                        <input type="text" class="form-control input-lg text-center" placeholder="Type a word" ng-model="formData.text">
+                        <input type="text" class="form-control input-lg text-center" placeholder="Type a word" ng-model="nextNode">
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-lg">Add</button>

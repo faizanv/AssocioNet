@@ -37,18 +37,34 @@ router.post('/create', function (req, res) {
     template.save();
 
     session.template_id = template.id;
-    res.send(template); 
+    res.send({template: template}); 
   }
 });
 
-// Make move in game
-router.post('/play/:template_id', function (req, res) {
-  res.send({});
-});
-
 // Add move to template
-router.post('/template/:id/add', function (req, res) {
-  res.send({});
+router.post('/template/:template_id/add', function (req, res) {
+  
+  if (req.body.node_a && req.body.node_b) {
+
+    Template.findOneAndUpdate(
+      { _id: req.params.template_id },
+      { $push: {
+        'edges': {
+          'node_a': req.body.node_a,
+          'node_b': req.body.node_b          
+        }
+      }}
+    ).exec(function (err, template) {
+
+      if (err) {
+        sendBadRequest(res, err);
+      } else {
+        res.send(template);
+      }
+    });
+  } else {
+    sendBadRequest(res, "node_a and node_b required for move");
+  }
 });
 
 // Delete move from template
@@ -56,6 +72,13 @@ router.post('/template/:template_id/delete', function (req, res) {
   res.send({});
 });
 
+// Make move in game
+router.post('/play/:template_id', function (req, res) {
+  res.send({});
+});
 
+function sendBadRequest(res, message) {
+  res.status(400).send({error: message});
+}
 
 module.exports = router;
