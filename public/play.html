@@ -1,4 +1,5 @@
 <html ng-app="associoPlay">
+
 <head>
   <meta charset="UTF-8">
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
@@ -7,6 +8,22 @@
   <script src="javascripts/play.js"></script>
   <title>AssocioVenture</title>
 </head>
-<body>
+
+<body ng-controller="mainController as controller">
+  <div id="guess-form" class="row">
+    <div class="col-sm-8 col-sm-offset-2 text-center">
+      <form>
+        <div class="form-group">
+
+          <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
+          <input type="text" class="form-control input-lg text-center" placeholder="Enter your guess here" ng-model="formData.guess">
+        </div>
+
+        <!-- createToDo() WILL CREATE NEW TODOS -->
+        <button type="submit" class="btn btn-primary btn-lg" ng-click="createMove()">Go</button>
+      </form>
+    </div>
+  </div>
 </body>
+
 </html>
