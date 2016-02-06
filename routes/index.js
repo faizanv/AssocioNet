@@ -21,11 +21,21 @@ router.get('/play', function (req, res) {
   res.sendfile('public/play.html');
 });
 
+router.get('/select', function(req, res) {
+  Template.find(function(err, templates) {
+    if (err) {
+      res.send(err);
+    } else {
+      res.render('select', templates);
+    }
+  });
+});
+
 // Create new template for session
 router.post('/create', function (req, res) {
   var session = req.session;
 
-  // Store Template.id in session 
+  // Store Template.id in session
   if (session.template_id) {
     Template.findOne({_id: session.template_id}).exec( function (err, template) {
       res.send({template: template});
@@ -37,13 +47,13 @@ router.post('/create', function (req, res) {
     template.save();
 
     session.template_id = template.id;
-    res.send({template: template}); 
+    res.send({template: template});
   }
 });
 
 // Add move to template
 router.post('/template/:template_id/add', function (req, res) {
-  
+
   if (req.body.node_a && req.body.node_b) {
 
     Template.findOneAndUpdate(
@@ -51,7 +61,7 @@ router.post('/template/:template_id/add', function (req, res) {
       { $push: {
         'edges': {
           'node_a': req.body.node_a,
-          'node_b': req.body.node_b          
+          'node_b': req.body.node_b
         }
       }}
     ).exec(function (err, template) {
@@ -66,6 +76,12 @@ router.post('/template/:template_id/add', function (req, res) {
     sendBadRequest(res, "node_a and node_b required for move");
   }
 });
+
+// router.get('/template', function(req, res) {
+//   Template.find(function(e, ret) {
+//     res.send(ret);
+//   });
+// });
 
 // Delete move from template
 router.post('/template/:template_id/delete', function (req, res) {
