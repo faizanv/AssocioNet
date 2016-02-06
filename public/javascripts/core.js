@@ -1,6 +1,7 @@
 var associoCreate = angular.module('associoCreate', []);
+var associoPlay = angular.module('associoPlay', []);
 
-function mainController($scope, $http) {
+function createController($scope, $http) {
   $scope.template;
   $scope.nextNode;
   $scope.currentNode;
@@ -53,6 +54,39 @@ function mainController($scope, $http) {
   activate();
 }
 
+
+function playController($scope, $http) {
+  $scope.guess;
+  $scope.game;
+  $scope.template_id;
+
+  function activate() {
+    $http.post('/play/' + $scope.template_id).success(function (data) {
+      var game = data.game;
+      $scope.game = game;
+
+      console.log("Game: ", game);
+    });
+  }
+
+  $scope.init = function (template_id) {
+    $scope.template_id = template_id;
+    activate();
+  }
+
+  $scope.addMove = function() {
+    console.log("Add move!");
+    $scope.guess = null;
+  }
+  
+  $scope.deleteMove = function() {
+    console.log("Delete move!");
+  }
+}
+
+associoPlay.controller('playController', ['$scope', '$http', playController]);
+associoCreate.controller('createController', ['$scope', '$http', createController]);
+
 function edgeListToNodes(edges) {
   var nodes = [];
   var links = [];
@@ -92,5 +126,3 @@ function edgeListToNodes(edges) {
   };
   return result;
 }
-
-associoCreate.controller('mainController', ['$scope', '$http', mainController]);

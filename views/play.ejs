@@ -5,18 +5,18 @@
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
   <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script><!-- load jquery -->
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script><!-- load angular -->
-  <script src="/javascripts/play.js"></script>
+  <script src="/javascripts/core.js"></script>
   <title>AssocioVenture</title>
 </head>
 
-<body ng-controller="mainController">
+<body ng-controller="playController" ng-init="init('<%= template_id %>')">
   <div id="guess-form" class="row">
     <div class="col-sm-8 col-sm-offset-2 text-center">
       <form ng-submit="addMove()">
         <div class="form-group">
 
           <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
-          <input type="text" class="form-control input-lg text-center" placeholder="Enter your guess here" ng-model="formData.guess">
+          <input type="text" class="form-control input-lg text-center" placeholder="Enter your guess here" ng-model="guess">
         </div>
 
         <!-- createToDo() WILL CREATE NEW TODOS -->

@@ -21,7 +21,7 @@ router.get('/select', function(req, res) {
     if (err) {
       res.send(err);
     } else {
-      res.render('select', templates);
+      res.render('select', {content: templates});
     }
   });
 });
@@ -85,7 +85,7 @@ router.post('/template/:template_id/delete', function (req, res) {
 
 // Angular App for playing a puzzle
 router.get('/play/:template_id', function (req, res) {
-  res.sendfile('public/play.html');
+  res.render('play', {template_id: req.params.template_id});
 });
 
 // Initialize game in background
@@ -104,7 +104,14 @@ router.post('/play/:template_id', function (req, res) {
         if (game) {
           res.send({game: game});          
         } else {
-          sendBadRequest(res, "Game not found");
+          var game = new Game({
+            session_id: session.id,
+            template_id: req.params.template_id
+          });
+          game.save();
+
+          session.game_id = game.id;
+          res.send({game: game});
         }
       }
     });
