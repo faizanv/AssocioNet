@@ -141,7 +141,14 @@ router.post('/play/:template', function (req, res) {
                 template_id: req.template._id,
                 game_id: game._id
               }).exec(function (err, moves) {
-                graph: res.send(edgeListToRedactedNodes(req.template.root, req.template.edges, moves));
+                if (err) {
+                  sendBadRequest(res, err);
+                } else {
+                  graph: res.send({
+                    graph: edgeListToRedactedNodes(req.template.root, req.template.edges, moves)
+                  });
+                  
+                }
               });
             }
           });
@@ -158,7 +165,7 @@ router.post('/play/:template', function (req, res) {
             
             Move.find({
               template_id: req.template._id,
-              game_id: game_id
+              game_id: game._id
             }).exec(function (err, moves) {
               res.send({
                 graph: edgeListToRedactedNodes(req.template.root, req.template.edges, moves)
@@ -251,10 +258,15 @@ router.post('/play/:template/move', function (req, res) {
           });
 
           move.save(function (err, move) {
+            if (err) {
+              return sendBadRequest(res, err);
+            }
+
             Move.find({
               template_id: req.template._id,
               game_id: game_id
             }).exec(function (err, moves) {
+
               res.send({
                 move: move,
                 graph: edgeListToRedactedNodes(req.template.root, req.template.edges, moves)
@@ -344,13 +356,15 @@ function edgeListToRedactedNodes(root, edges, moves) {
 
     // For all the solved nodes
     for (j = 0; !solved && j < moves.length; j++) {
+      var move = moves[j];
       // If we have already discovered it
-      if (moves[j].node_a == node && moves[j].node_b == node) {
+
+      if (move.node_a == node || move.node_b == node) {
         solved = true;
       }
     }
-    if (solved || nodes[i] == root) {
-      nodeList[i] = {name: nodes[i]};
+    if (solved || node == root) {
+      nodeList[i] = {name: node};
     } else {
       nodeList[i] = {name: "?"};      
     }

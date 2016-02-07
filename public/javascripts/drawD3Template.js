@@ -1,6 +1,6 @@
 //Constants for the SVG
 var width = window.innerWidth,
-    height = 350;
+    height = 500;
 
 // Resolves collisions between d and all other circles.
 var linkDistance = 120;
