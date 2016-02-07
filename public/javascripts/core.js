@@ -480,7 +480,8 @@ function visController($scope, $http) {
   var linkDistance = 120;
   var padding = 5; // separation between circles
   var radius=30;
-
+  var min_zoom = 0.1;
+    var max_zoom = 7;
 
   // d3.json("/graph.json", function(error, graph) {
   //     if (error) throw error;
@@ -506,13 +507,16 @@ function visController($scope, $http) {
           .attr("width", width)
           .attr("height", height);
 
+        var zoom = d3.behavior.zoom().scaleExtent([min_zoom,max_zoom])
+        var g = svg.append("g");
+
       //Creates the graph data structure out of the json data
       force.nodes(graph.nodes)
           .links(graph.links)
           .start();
 
       //Create all the line svgs but without locations yet
-      var link = svg.selectAll('.link')
+      var link = g.selectAll('.link')
           .data(graph.links)
           .enter().append("line")
           .attr('class', 'link')
@@ -522,7 +526,7 @@ function visController($scope, $http) {
       //TODO: refactor class structure
 
       //Do the same with the circles for the nodes - no 
-      var node = svg.selectAll(".node")
+      var node = g.selectAll(".node")
           .data(graph.nodes)
           .enter().append("circle")
           .attr("class", function(d) {
@@ -548,7 +552,7 @@ function visController($scope, $http) {
           });
           // .call(force.drag);
 
-      var text = svg.selectAll(".text")
+      var text = g.selectAll(".text")
           .data(graph.nodes)
           .enter().append("text")
           .attr("class", "text")
@@ -559,6 +563,11 @@ function visController($scope, $http) {
               return d.name;
           });
 
+          zoom.on("zoom", function() {
+        g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+    });
+
+    svg.call(zoom);
       //Now we are giving the SVGs co-ordinates - the force layout is generating the co-ordinates which this code is using to update the attributes of the SVG elements
       force.on("tick", function () {
           link.attr("x1", function (d) {
