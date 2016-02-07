@@ -10,6 +10,10 @@
 </head>
 
 <body ng-controller="playController" ng-init="init('<%= template_id %>')">
+
+  <div class="text-center">
+    <h3>{{ currentNode }}</h3>
+  </div>
   <div id="guess-form" class="row">
     <div class="col-sm-8 col-sm-offset-2 text-center">
       <form ng-submit="addMove()">

@@ -36,6 +36,12 @@ function createController($scope, $http) {
       });
     } else {
       console.log("First node: ", $scope.nextNode);
+      $http.post('/template/' + $scope.template._id + '/add', {
+        root: $scope.nextNode
+      }).success(function (response) {
+        console.log("Success!", response);
+        $scope.template = response.template;
+      });
     }
     $scope.currentNode = $scope.nextNode;
     $scope.nextNode = null;
@@ -58,14 +64,18 @@ function createController($scope, $http) {
 function playController($scope, $http) {
   $scope.guess;
   $scope.game;
+  $scope.moves;
   $scope.template_id;
 
   function activate() {
     $http.post('/play/' + $scope.template_id).success(function (data) {
       var game = data.game;
+      var moves = data.moves;
       $scope.game = game;
+      $scope.moves = moves;
+      $scope.currentNode = game.root;
 
-      console.log("Game: ", game);
+      console.log("response: ", data);
     });
   }
 
@@ -76,6 +86,15 @@ function playController($scope, $http) {
 
   $scope.addMove = function() {
     console.log("Add move!");
+    $http.post('/play/' + $scope.template_id + '/move', {
+      node_a: $scope.currentNode,
+      node_b: $scope.guess
+    }).success(function (data) {
+      console.log(data);
+      if (data.move.correct) {
+        $scope.currentNode = data.move.node_b
+      }
+    });
     $scope.guess = null;
   }
   
