@@ -100,7 +100,7 @@ router.post('/template/:template/add', function (req, res) {
 });
 
 router.get('/template/:template', function (req, res) {
-  res.send({template: req.template});
+  res.send({template: req.template});      
 });
 
 // Delete move from template
@@ -117,7 +117,7 @@ router.get('/play/:template', function (req, res) {
 router.post('/play/:template', function (req, res) {
   var session = req.session;
 
-  // Store Game.id in session
+  // Store Game.id in session 
   if (session.game_id) {
 
     // Get the matching game from the session
@@ -159,7 +159,7 @@ router.post('/play/:template', function (req, res) {
 
           game.save(function (err, g) {
             session.game_id = game.id;
-
+            
             Move.find({
               template_id: req.template._id,
               game_id: g._id
@@ -276,7 +276,7 @@ router.post('/play/:template/move', function (req, res) {
         }
       });
 
-    } else {
+    } else {  
       sendBadRequest(res, "node_a and node_b required for move");
     }
   } else {
@@ -308,10 +308,6 @@ router.get('/associations/graph', function (req, res) {
     });
   });
 })
-
-router.get('/newTemplate', function(req, res) {
-  req.session.destroy();
-});
 
 function filteredEdgeFromStrings(a, b) {
   a = a.toLowerCase();
@@ -359,7 +355,7 @@ function edgeListToRedactedGraph(root, edges, moves) {
 
   }
   var nodeList = [];
-
+  
   for (i = 0; i < nodes.length; i++) {
     var node = nodes[i];
     var solved = false;
@@ -376,7 +372,7 @@ function edgeListToRedactedGraph(root, edges, moves) {
     if (solved || node == root) {
       nodeList[i] = {name: node};
     } else {
-      nodeList[i] = {name: "?"};
+      nodeList[i] = {name: "?"};      
     }
   }
 
@@ -396,16 +392,34 @@ function associationsToGraph(associations) {
   for (i = 0; i < associations.length; i++) {
     var edge = associations[i];
 
-    var i_nodeA = nodes.indexOf(edge.node_a);
-    var i_nodeB = nodes.indexOf(edge.node_b);
+    var i_nodeA = -1;
+    var i_nodeB = -1;
+    for (j=0; j < nodes.length; j++) {
+      var node = nodes[j];
+      console.log(node);
+      if (node.name == edge.node_a) {
+        i_nodeA = j;
+        node.count += 1;
+      }
+      if (node.name == edge.node_b) {
+        i_nodeB = j;
+        node.count += 1;
+      }
+    }
 
     // New node. Update index
     if (i_nodeA < 0) {
-      nodes.push(edge.node_a);
+      nodes.push({
+        name: edge.node_a,
+        count: 1
+      });
       i_nodeA = nodes.length - 1;
     }
     if (i_nodeB < 0) {
-      nodes.push(edge.node_b);
+      nodes.push({
+        name: edge.node_b,
+        count: 1
+      });
       i_nodeB = nodes.length - 1;
     }
 
@@ -418,18 +432,12 @@ function associationsToGraph(associations) {
 
   }
   var nodeList = [];
-  
-  for (i = 0; i < nodes.length; i++) {
-    var node = nodes[i];
-
-    nodeList[i] = {name: node};
-  }
 
   var result = {
-    nodes: nodeList,
+    nodes: nodes,
     links: links
   };
-  console.log(result);
+  // console.log(result);
   return result;
 }
 

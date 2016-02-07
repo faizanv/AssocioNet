@@ -41,7 +41,9 @@ function createController($scope, $http) {
           result += event.results[i][0].transcript;
         }
         $scope.nextNode = result;
-        $scope.addMove();
+        setTimeout(function (){
+          $scope.addMove();
+        }, 1000);
       }
       recognition.onerror = function(event) {
         console.error(event);
@@ -91,14 +93,6 @@ function createController($scope, $http) {
   //     restrict: 'A'
   //   }
   // });
-
-  $scope.newTemplate = function() {
-    console.log("hit");
-    $http.get('/newTemplate').then(function(res) {
-      console.log(res);
-      $scope.apply();
-    });
-  }
 
   activate();
 }
@@ -370,7 +364,12 @@ function visController($scope, $http) {
                   return "node";
               }
           })
-          .attr("r", radius)
+          .attr("r", function (d) {
+            console.log(d)
+            var val = radius + (5 * (d.count - 1));
+            d.radius = val;
+            return val;
+          })
           .style("fill", lightBlue)
           .on('click', function() {
               d = this.__data__;
@@ -430,7 +429,7 @@ function visController($scope, $http) {
       function collide(alpha) {
         var quadtree = d3.geom.quadtree(graph.nodes);
         return function(d) {
-          var rb = 2*radius + padding,
+          var rb = 2*d.radius + padding,
               nx1 = d.x - rb,
               nx2 = d.x + rb,
               ny1 = d.y - rb,
