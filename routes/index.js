@@ -83,10 +83,7 @@ router.post('/template/:template/add', function (req, res) {
     Template.findOneAndUpdate(
       { _id: req.template._id },
       { $push: {
-        'edges': {
-          'node_a': req.body.node_a,
-          'node_b': req.body.node_b
-        }
+        edges: filteredEdgeFromStrings(req.body.node_a, req.body.node_b)
       }},
       { new: true }
     ).exec(function (err, template) {
@@ -124,6 +121,7 @@ router.post('/play/:template', function (req, res) {
   if (session.game_id) {
 
     // Get the matching game from the session
+    console.log(req.template)
     Game.findOne({
       _id: session.game_id,
       template_id: req.template._id
@@ -184,18 +182,13 @@ router.post('/play/:template/move', function (req, res) {
   if (game_id) {
     if (req.body.node_a && req.body.node_b) {
 
+      var link = filteredEdgeFromStrings(req.body.node_a, req.body.node_b);
+
       Move.findOne({
           template_id: req.template._id,
           game_id: game_id,
-          $or: [
-            { 
-              node_a: req.body.node_a,
-              node_b: req.body.node_b
-            }, { 
-              node_a: req.body.node_b,
-              node_b: req.body.node_a
-            }
-          ]
+          node_a: link.node_a,
+          node_b: link.node_b
       }).exec(function (err, move) {
         if (err) {
           sendBadRequest(res, err);
@@ -214,8 +207,7 @@ router.post('/play/:template/move', function (req, res) {
             var edge = req.template.edges[i];
 
             // If the move is valid
-            if ((req.body.node_a == edge.node_a && req.body.node_b == edge.node_b) ||
-              (req.body.node_a == edge.node_b && req.body.node_b == edge.node_a)) {
+            if (link.node_a == edge.node_a && link.node_b == edge.node_b) {
               valid = true;
             }
             i++;
@@ -230,8 +222,8 @@ router.post('/play/:template/move', function (req, res) {
           var move = new Move({
               template_id: req.template._id,
               game_id: game_id,
-              node_a: req.body.node_a,
-              node_b: req.body.node_b,
+              node_a: link.node_a,
+              node_b: link.node_b,
               correct: valid
           });
           move.save(function (err) {
@@ -251,6 +243,42 @@ router.post('/play/:template/move', function (req, res) {
     sendBadRequest(res, "No game for this session");
   }
 });
+
+router.get('/associations', function (req, res) {
+  Move.aggregate([
+  {
+    $group: {
+      _id: {
+        node_a: "$node_a",
+        node_b: "$node_b"
+      },
+      correct: { $sum: { $cond: ["$correct", 1, 0]}},
+      count: { $sum:  1 }
+    }
+  }, {
+    $project: {correct: 1, count: 1}
+  }
+  ]).exec(function (err, associations) {
+    res.send({associations: associations});
+  });
+});
+
+function filteredEdgeFromStrings(a, b) {
+  a = a.toLowerCase();
+  b = b.toLowerCase();
+
+  if (b < a) {
+    return {
+      node_a: b,
+      node_b: a
+    }
+  } else {
+    return {
+      node_a: a,
+      node_b: b
+    }
+  }
+}
 
 function sendBadRequest(res, message) {
   res.status(400).send({error: message});

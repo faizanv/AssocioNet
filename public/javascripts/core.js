@@ -92,10 +92,10 @@ function playController($scope, $http) {
     }).success(function (data) {
       console.log(data);
       if (data.move.correct) {
-        $scope.currentNode = data.move.node_b
+        $scope.currentNode = $scope.guess
       }
+      $scope.guess = null;
     });
-    $scope.guess = null;
   }
   
   $scope.deleteMove = function() {
