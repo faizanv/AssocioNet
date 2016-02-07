@@ -34,14 +34,14 @@
                     <div class="form-group">
 
                         <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
-                        <input type="text" class="form-control input-lg text-center" placeholder="Type a word" ng-model="nextNode">
+                        <input type="text" class="form-control input-lg text-center" placeholder="Type a word" ng-model="nextNode" id="entry">
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-lg">Add</button>
+                    <button type="submit" class="btn btn-primary btn-lg" id="addButton">Add</button>
+                    <button type="button" class="btn btn-info btn-lg" id="dictateButton" ng-click="startDictation()">Dictate</button>
                 </form>
             </div>
         </div>
-
     </div>
 
 </body>
