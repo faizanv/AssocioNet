@@ -6,6 +6,7 @@
     <title>AssocioVenture</title>
 
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
+    <link rel="stylesheet" href="/stylesheets/style.css">
     <style>
         html                    { overflow-y:scroll; }
         body                    { padding-top:50px; }
@@ -15,6 +16,8 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script><!-- load jquery -->
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script><!-- load angular -->
     <script src="/javascripts/core.js"></script>
+    <script src="/javascripts/drawTemplate.js"></script>
+
 
 </head>
 <body ng-controller="createController as controller">
@@ -23,7 +26,8 @@
         <div class="text-center">
             <h1>Create a Template</h1>
         </div>
-
+        
+        <div id="canvas_container"></div>
         <div ng-repeat="edge in template.edges track by $index">
             <div class="text-center">{{ edge.node_a }} -> {{ edge.node_b }}</div>
         </div>

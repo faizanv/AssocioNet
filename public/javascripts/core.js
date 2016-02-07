@@ -6,6 +6,10 @@ function createController($scope, $http) {
   $scope.nextNode;
   $scope.currentNode;
 
+  var canvas = createHiDPICanvas(600,200);
+  document.getElementById('canvas_container').appendChild(canvas);
+
+
   function activate() {
     $http.post('/create').success(function (data) {
       var template = data.template;
@@ -60,6 +64,7 @@ function createController($scope, $http) {
       }).success(function (response) {
         console.log("Success!", response);
         $scope.template = response.template;
+        changeCurrentNode($scope.currentNode, $scope.template);
       });
     } else {
       console.log("First node: ", $scope.nextNode);
@@ -68,6 +73,7 @@ function createController($scope, $http) {
       }).success(function (response) {
         console.log("Success!", response);
         $scope.template = response.template;
+        changeCurrentNode($scope.currentNode, $scope.template);
       });
     }
     $scope.currentNode = $scope.nextNode;
