@@ -15,3 +15,28 @@ canvas {
     display: block;
     width: 600px;
 }
+
+svg {
+    margin: auto;
+    display: block;
+    /*width: 600px;*/
+}
+
+.node {
+  fill: #000;
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.link {
+  stroke: #aaa;
+  stroke-width: 14px;
+}
+
+h3 {
+    color: #1ABC9C;
+    text-align:center;  
+    font-style: italic;
+    font-size: 14px;
+    font-family: "Helvetica";
+}

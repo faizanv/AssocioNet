@@ -121,7 +121,6 @@ router.post('/play/:template', function (req, res) {
   if (session.game_id) {
 
     // Get the matching game from the session
-    console.log(req.template)
     Game.findOne({
       _id: session.game_id,
       template_id: req.template._id
@@ -138,9 +137,11 @@ router.post('/play/:template', function (req, res) {
             if (err) {
               sendBadRequest(res, err);
             } else {
-              res.send({
-                game: game,
-                moves: moves
+              Move.find({
+                template_id: req.template._id,
+                game_id: game._id
+              }).exec(function (err, moves) {
+                graph: res.send(edgeListToRedactedNodes(req.template.root, req.template.edges, moves));
               });
             }
           });
@@ -152,10 +153,18 @@ router.post('/play/:template', function (req, res) {
             template_id: req.template._id,
             root: req.template.root
           });
-          game.save();
-
-          session.game_id = game.id;
-          res.send({game: game});
+          game.save(function (err, g) {
+            session.game_id = game.id;
+            
+            Move.find({
+              template_id: req.template._id,
+              game_id: game_id
+            }).exec(function (err, moves) {
+              res.send({
+                graph: edgeListToRedactedNodes(req.template.root, req.template.edges, moves)
+              });
+            });
+         });
         }
       }
     });
@@ -167,10 +176,13 @@ router.post('/play/:template', function (req, res) {
       template_id: req.template._id,
       root: req.template.root
     });
-    game.save();
+    game.save(function (err, g) {
+      session.game_id = game.id;
+      res.send({
+        graph: edgeListToRedactedNodes(req.template.root, req.template.edges, [])
+      });
+    });
 
-    session.game_id = game.id;
-    res.send({game: game});
   }
 });
 
@@ -191,12 +203,23 @@ router.post('/play/:template/move', function (req, res) {
           node_b: link.node_b
       }).exec(function (err, move) {
         if (err) {
-          sendBadRequest(res, err);
+          return sendBadRequest(res, err);
+        }
+
 
         // If the move has already been made, just return it
-        } else if (move) {
+        if (move) {
           console.log("Move has already been made");
-          res.send({move: move});
+
+          Move.find({
+            template_id: req.template._id,
+            game_id: game_id
+          }).exec(function (err, moves) {
+            res.send({
+              move: move,
+              graph: edgeListToRedactedNodes(req.template.root, req.template.edges, moves)
+            });
+          });
 
         // Check if the move is a correct solution, then add it
         } else {
@@ -226,17 +249,22 @@ router.post('/play/:template/move', function (req, res) {
               node_b: link.node_b,
               correct: valid
           });
-          move.save(function (err) {
-            if (err) {
-              sendBadRequest(res, err);
-            } else {
-              res.send({move: move});
-            }
+
+          move.save(function (err, move) {
+            Move.find({
+              template_id: req.template._id,
+              game_id: game_id
+            }).exec(function (err, moves) {
+              res.send({
+                move: move,
+                graph: edgeListToRedactedNodes(req.template.root, req.template.edges, moves)
+              });
+            });
           });
         }
       });
 
-    } else {
+    } else {  
       sendBadRequest(res, "node_a and node_b required for move");
     }
   } else {
@@ -256,7 +284,7 @@ router.get('/associations', function (req, res) {
       count: { $sum:  1 }
     }
   }, {
-    $project: {correct: 1, count: 1}
+    $project: {_id: 0, "node_a": "$_id.node_a", "node_b": "$_id.node_b", correct: 1, count: 1}
   }
   ]).exec(function (err, associations) {
     res.send({associations: associations});
@@ -279,6 +307,63 @@ function filteredEdgeFromStrings(a, b) {
     }
   }
 }
+
+function edgeListToRedactedNodes(root, edges, moves) {
+  var nodes = [];
+  var links = [];
+
+  var i;
+  nodes.push(root);
+  for (i = 0; i < edges.length; i++) {
+    var edge = edges[i];
+
+    var i_nodeA = nodes.indexOf(edge.node_a);
+    var i_nodeB = nodes.indexOf(edge.node_b);
+
+    // New node. Update index
+    if (i_nodeA < 0) {
+      nodes.push(edge.node_a);
+      i_nodeA = nodes.length - 1;
+    }
+    if (i_nodeB < 0) {
+      nodes.push(edge.node_b);
+      i_nodeB = nodes.length - 1;
+    }
+
+    links.push({
+      source: i_nodeA,
+      target: i_nodeB
+    });
+
+  }
+  var nodeList = [];
+  
+  for (i = 0; i < nodes.length; i++) {
+    var node = nodes[i];
+    var solved = false;
+
+    // For all the solved nodes
+    for (j = 0; !solved && j < moves.length; j++) {
+      // If we have already discovered it
+      if (moves[j].node_a == node && moves[j].node_b == node) {
+        solved = true;
+      }
+    }
+    if (solved || nodes[i] == root) {
+      nodeList[i] = {name: nodes[i]};
+    } else {
+      nodeList[i] = {name: "?"};      
+    }
+  }
+
+  var result = {
+    nodes: nodeList,
+    links: links
+  };
+  console.log(result);
+  return result;
+}
+
 
 function sendBadRequest(res, message) {
   res.status(400).send({error: message});
