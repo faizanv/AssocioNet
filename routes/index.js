@@ -99,6 +99,10 @@ router.post('/template/:template/add', function (req, res) {
   }
 });
 
+router.get('/newTemplate', function(req, res) {
+   req.session.destroy();
+ });
+
 router.get('/template/:template', function (req, res) {
   res.send({template: req.template});      
 });
