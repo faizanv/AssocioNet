@@ -24,6 +24,33 @@ function createController($scope, $http) {
       }
       console.log(template);
     });
+
+    if (!('webkitSpeechRecognition' in window)) {
+      upgrade();
+    } else {
+      $scope.recognition = new webkitSpeechRecognition();
+      var recognition = $scope.recognition;
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onresult = function(event) {
+        var result = "";
+        for (var i = event.resultIndex; i < event.results.length; i++) {
+          console.log(event.results[i][0].transcript);
+          result += event.results[i][0].transcript;
+        }
+        $scope.nextNode = result;
+        setTimeout(function (){
+          $scope.addMove();
+        }, 1000);
+      }
+      recognition.onerror = function(event) {
+        console.error(event);
+      }
+      recognition.onend = function() {
+        console.log("done");
+      }
+    }
   }
 
   $scope.addMove = function() {
@@ -51,11 +78,15 @@ function createController($scope, $http) {
     $scope.currentNode = $scope.nextNode;
     $scope.nextNode = null;
   }
-  
+
   $scope.deleteMove = function() {
     console.log("Delete move!");
   }
 
+  $scope.startDictation = function() {
+    console.log("dictate clicked");
+    $scope.recognition.start();
+  }
   // $scope.textChange('ngKeystroke', function () {
   //   return {
   //     restrict: 'A'
@@ -108,7 +139,7 @@ function playController($scope, $http) {
     });
     $scope.guess = null;
   }
-  
+
   $scope.deleteMove = function() {
     console.log("Delete move!");
   }
@@ -148,7 +179,7 @@ function edgeListToNodes(root, edges) {
       }
   }
   var nodeList = [];
-  
+
   for (i = 0; i < nodes.length; i++) {
     nodeList[i] = {name: nodes[i]};
   }
