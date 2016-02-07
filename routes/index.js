@@ -285,22 +285,7 @@ router.post('/play/:template/move', function (req, res) {
 });
 
 router.get('/associations', function (req, res) {
-  Move.aggregate([
-  {
-    $group: {
-      _id: {
-        node_a: "$node_a",
-        node_b: "$node_b"
-      },
-      correct: { $sum: { $cond: ["$correct", 1, 0]}},
-      count: { $sum:  1 }
-    }
-  }, {
-    $project: {_id: 0, "node_a": "$_id.node_a", "node_b": "$_id.node_b", correct: 1, count: 1}
-  }
-  ]).exec(function (err, associations) {
-    res.send({associations: associations});
-  });
+  res.sendfile('public/associations.html');
 });
 
 router.get('/associations/graph', function (req, res) {
