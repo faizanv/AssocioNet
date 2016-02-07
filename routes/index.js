@@ -131,41 +131,38 @@ router.post('/play/:template', function (req, res) {
 
         // If a game exists, retreive its moves
         if (game) {
+          console.log("Existing game")  ;
+
           Move.find({
+            template_id: req.template._id,
             game_id: game._id
           }).exec(function (err, moves) {
             if (err) {
               sendBadRequest(res, err);
             } else {
-              Move.find({
-                template_id: req.template._id,
-                game_id: game._id
-              }).exec(function (err, moves) {
-                if (err) {
-                  sendBadRequest(res, err);
-                } else {
-                  graph: res.send({
-                    graph: edgeListToRedactedNodes(req.template.root, req.template.edges, moves)
-                  });
-                  
-                }
+
+              res.send({
+                graph: edgeListToRedactedNodes(req.template.root, req.template.edges, moves)
               });
             }
           });
 
         // Make a new one otherwise
         } else {
+          console.log("new game");
+
           var game = new Game({
             session_id: session.id,
             template_id: req.template._id,
             root: req.template.root
           });
+
           game.save(function (err, g) {
             session.game_id = game.id;
             
             Move.find({
               template_id: req.template._id,
-              game_id: game._id
+              game_id: g._id
             }).exec(function (err, moves) {
               res.send({
                 graph: edgeListToRedactedNodes(req.template.root, req.template.edges, moves)
@@ -178,13 +175,16 @@ router.post('/play/:template', function (req, res) {
 
   // Make a new game if none yet in session
   } else {
+    console.log("New session")  ;
+
     var game = new Game({
       session_id: session.id,
       template_id: req.template._id,
       root: req.template.root
     });
+    session.game_id = game.id;
+    
     game.save(function (err, g) {
-      session.game_id = game.id;
       res.send({
         graph: edgeListToRedactedNodes(req.template.root, req.template.edges, [])
       });
@@ -232,7 +232,7 @@ router.post('/play/:template/move', function (req, res) {
         } else {
 
           var i = 0;
-          var valid = false;
+          var valid = false;  
           while (i < req.template.edges.length && !valid) {
             var edge = req.template.edges[i];
 
