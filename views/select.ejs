@@ -17,7 +17,7 @@
   <ul class="list-group">
     <% for(var i=0; i<content.length; i++) { %>
         <li class="list-group-item text-center">
-                <a class="bg-info" href="/play/<%= content[i]._id %>">Template <%= i+1 %></a>
+                <a class="bg-info" href="/play/<%= content[i]._id %>"><%= content[i].root %></a>
         </li>
     <% } %>
 </ul>

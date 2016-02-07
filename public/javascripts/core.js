@@ -99,19 +99,18 @@ function createController($scope, $http) {
 
 function playController($scope, $http) {
   $scope.guess;
-  $scope.game;
-  $scope.moves;
+  $scope.nodes;
+  $scope.links;
   $scope.template_id;
 
   function activate() {
     $http.post('/play/' + $scope.template_id).success(function (data) {
-      var game = data.game;
-      var moves = data.moves;
-      $scope.game = game;
-      $scope.moves = moves;
-      $scope.currentNode = game.root;
+      console.log(data);
+      $scope.nodes = data.graph.nodes;
+      $scope.moves = (data.graph.links) ? data.graph.links : [];
+      $scope.currentNode = $scope.nodes[0].name;
 
-      graphD3Template(edgeListToNodes(game.root, moves));
+      graphD3Template(data.graph);
       console.log("response: ", data);
     });
   }
@@ -129,15 +128,13 @@ function playController($scope, $http) {
     }).success(function (data) {
       console.log(data);
       if (data.move.correct) {
-        $scope.currentNode = data.move.node_b;
-        if (!$scope.moves) {
-            $scope.moves = [];
-        }
+
+        $scope.currentNode = $scope.guess
         $scope.moves.push(data.move);
-        graphD3Template(edgeListToNodes($scope.game.root, $scope.moves));
+        graphD3Template(data.graph);
       }
+      $scope.guess = null;
     });
-    $scope.guess = null;
   }
 
   $scope.deleteMove = function() {
