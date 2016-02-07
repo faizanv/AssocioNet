@@ -45,13 +45,30 @@ var graphD3Template = function(graph) {
         .style("stroke","black")
         .style("stroke-width", 2);
 
+    //TODO: refactor class structure
+
     //Do the same with the circles for the nodes - no 
     var node = svg.selectAll(".node")
         .data(graph.nodes)
         .enter().append("circle")
-        .attr("class", "node")
+        .attr("class", function(d) {
+            if (d.name === currentNode) {
+                return "focus node";
+            } else {
+                return "node";
+            }
+        })
         .attr("r", radius)
-        .style("fill", lightBlue);
+        .style("fill", lightBlue)
+        .on('click', function() {
+            d = this.__data__;
+            d3.select("svg").selectAll("circle").attr('class', 'node');
+            d3.select(this).attr("class", "focus node");
+            console.lo
+            $scope.currentNode = d.name;
+            console.log({name : d.name});
+            console.log($scope.currentNode);
+        });
         // .call(force.drag);
 
     var text = svg.selectAll(".text")

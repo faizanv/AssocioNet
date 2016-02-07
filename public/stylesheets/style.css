@@ -28,6 +28,14 @@ svg {
   stroke-width: 1.5px;
 }
 
+.node:hover {
+    cursor: pointer;
+}
+
+.focus {
+    fill: #87D37C !important;
+}
+
 .link {
   stroke: #aaa;
   stroke-width: 14px;
@@ -35,6 +43,11 @@ svg {
 
 .text {
     fill: #2c3e50;
+    pointer-events:none;
+}
+
+.text:hover {
+    cursor:pointer;
 }
 
 h3 {
@@ -44,3 +57,9 @@ h3 {
     font-size: 14px;
     font-family: "Helvetica";
 }
+
+
+
+
+
+
