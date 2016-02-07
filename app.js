@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var engine = require('ejs-locals');
 var session = require('express-session');
-// var MongoStore = require('connect-mongo')(session);
+var MongoStore = require('connect-mongo')(session);
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -23,7 +23,7 @@ mongoose.connect('mongodb://localhost/associo', function (err) {
 app.use(session({
   secret: 'supersecretsessionpassword',
   maxAge: 1000 * 60 * 60 * 24 * 7 * 52,
-  // store: new MongoStore({ mongooseConnection: mongoose.connection}),
+  store: new MongoStore({ mongooseConnection: mongoose.connection}),
   saveUninitialized: false,
   resave: false
 }));
