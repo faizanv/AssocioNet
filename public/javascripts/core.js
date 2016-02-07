@@ -102,6 +102,7 @@ function playController($scope, $http) {
   $scope.nodes;
   $scope.links;
   $scope.template_id;
+  $scope.disableInput = true;
 
   function activate() {
     $http.post('/play/' + $scope.template_id).success(function (data) {
@@ -199,6 +200,8 @@ var graphD3Template = function(graph) {
         .attr("class", function(d) {
             if (d.name === $scope.currentNode) {
                 return "focus node";
+            } else if (d.name === '?') {
+                return "non-hover node"
             } else {
                 return "node";
             }
@@ -207,10 +210,12 @@ var graphD3Template = function(graph) {
         .style("fill", lightBlue)
         .on('click', function() {
             d = this.__data__;
-            d3.select("svg").selectAll("circle").attr('class', 'node');
-            d3.select(this).attr("class", "focus node");
-            $scope.currentNode = d.name;
-            $scope.$apply();
+            if (d.name !== '?') {
+                d3.select("svg").selectAll("circle").classed('focus', false);
+                d3.select(this).classed("focus", true);
+                $scope.currentNode = d.name;
+                $scope.$apply();
+            }
         });
         // .call(force.drag);
 
@@ -246,17 +251,21 @@ var graphD3Template = function(graph) {
             .attr("cy", function (d) {
             return d.y;
         });
-
         text.attr("x", function(d) {
             return d.x;
         })
         .attr("y", function(d) {
             return d.y;
-        })
+        });
         
         node.each(collide(0.5)); //Added
     });
 
+    force.on("end", function () {
+        $scope.disableInput = false;
+        $scope.$apply();
+        console.log("should be good");
+    });
     //---Insert------
     
 
@@ -270,7 +279,7 @@ var graphD3Template = function(graph) {
             ny2 = d.y + rb;
         
         quadtree.visit(function(quad, x1, y1, x2, y2) {
-          if (quad.point && (quad.point !== d)) {
+          if (quad.point && d && (quad.point !== d)) {
             var x = d.x - quad.point.x,
                 y = d.y - quad.point.y,
                 l = Math.sqrt(x * x + y * y);

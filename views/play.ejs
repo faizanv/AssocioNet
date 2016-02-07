@@ -22,7 +22,7 @@
         <div class="form-group">
 
           <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
-          <input type="text" class="form-control input-lg text-center" placeholder="Enter your guess here" ng-model="guess">
+          <input type="text" ng-disabled="disableInput" class="form-control input-lg text-center" placeholder="Enter your guess here" ng-model="guess">
         </div>
 
         <!-- createToDo() WILL CREATE NEW TODOS -->

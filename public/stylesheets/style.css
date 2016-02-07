@@ -50,6 +50,10 @@ svg {
     cursor:pointer;
 }
 
+.non-hover:hover {
+    cursor: default !important;
+}
+
 h3 {
     color: #1ABC9C;
     text-align:center;  
