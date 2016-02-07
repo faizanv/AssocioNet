@@ -23,7 +23,7 @@ svg {
 }
 
 .node {
-  fill: #000;
+  fill: #3498db;
   stroke: #fff;
   stroke-width: 1.5px;
 }
@@ -31,6 +31,10 @@ svg {
 .link {
   stroke: #aaa;
   stroke-width: 14px;
+}
+
+.text {
+    fill: #2c3e50;
 }
 
 h3 {

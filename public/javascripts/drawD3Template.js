@@ -12,8 +12,10 @@ var radius=30;
 //     if (error) throw error;
 
 var graphD3Template = function(graph) {
+    console.log(graph);
     //Set up the colour scale
-    var color = d3.scale.category20();
+    var lightBlue = "#89C4F4";
+    var darkBlue = "#2c3e50";
 
     //Set up the force layout
     var force = d3.layout.force()
@@ -49,11 +51,19 @@ var graphD3Template = function(graph) {
         .enter().append("circle")
         .attr("class", "node")
         .attr("r", radius)
-        .style("fill", function (d) {
-            return color(d.group);
-        });
+        .style("fill", lightBlue);
         // .call(force.drag);
 
+    var text = svg.selectAll(".text")
+        .data(graph.nodes)
+        .enter().append("text")
+        .attr("class", "text")
+        .attr("text-anchor","middle")
+        .attr("alignment-baseline", "middle")
+        .style("fill", darkBlue)
+        .text(function (d) {
+            return d.name;
+        });
 
     //Now we are giving the SVGs co-ordinates - the force layout is generating the co-ordinates which this code is using to update the attributes of the SVG elements
     force.on("tick", function () {
@@ -76,6 +86,13 @@ var graphD3Template = function(graph) {
             .attr("cy", function (d) {
             return d.y;
         });
+
+        text.attr("x", function(d) {
+            return d.x;
+        })
+        .attr("y", function(d) {
+            return d.y;
+        })
         
         node.each(collide(0.5)); //Added
     });
