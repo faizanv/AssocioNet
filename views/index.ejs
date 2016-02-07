@@ -1,8 +1,28 @@
-<% layout('layout') -%>
-<div class="title">  
-    <%= title %>
-</div>  
-<ul>
-  <li><a href="/create">Create</a></li>
-  <li><a href="/select">Play Games</a></li>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
+  <link href='https://fonts.googleapis.com/css?family=Sansita+One' rel='stylesheet' type='text/css'>
+  <style media="screen">
+    body {
+      font-family: 'Sansita One', cursive;
+    }
+    a {
+      font-size: 35px;
+    }
+    .jumbotron {
+      background-color: white;
+    }
+  </style>
+</head>
+<div class="jumbotron center">
+    <h1 class="text-center"><img class="img-rounded" width="50%" src="associateLogo.png" alt="logo" /></h1>
+</div>
+<ul class="list-group">
+  <a href="/create" class="list-group-item text-center list-group-item-success">Create Templates</a>
+  <a href="/select" class="list-group-item text-center list-group-item-success">Play Games</a>
+  <a href="/associations" class="list-group-item text-center list-group-item-success">See The Network</a>
+
 </ul>

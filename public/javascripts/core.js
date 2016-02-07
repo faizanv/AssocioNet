@@ -41,9 +41,7 @@ function createController($scope, $http) {
           result += event.results[i][0].transcript;
         }
         $scope.nextNode = result;
-        setTimeout(function (){
-          $scope.addMove();
-        }, 1000);
+        $scope.addMove();
       }
       recognition.onerror = function(event) {
         console.error(event);
@@ -93,6 +91,14 @@ function createController($scope, $http) {
   //     restrict: 'A'
   //   }
   // });
+
+  $scope.newTemplate = function() {
+    console.log("hit");
+    $http.get('/newTemplate').then(function(res) {
+      console.log(res);
+      $scope.apply();
+    });
+  }
 
   activate();
 }

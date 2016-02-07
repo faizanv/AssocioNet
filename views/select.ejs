@@ -4,20 +4,29 @@
   <meta charset="UTF-8">
   <title>Select Your Template</title>
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
+  <link href='https://fonts.googleapis.com/css?family=Sansita+One' rel='stylesheet' type='text/css'>
   <style media="screen">
     a {
       font-size: 35px;
     }
+    h1 {
+      font-size: 50px;
+      color: aqua;
+      margin-bottom: 50px;
+      font-family: 'Sansita One', cursive;
+    }
+    body {
+      font-family: 'Sansita One', cursive;
+    }
   </style>
 </head>
 <body>
-  <div class="jumbotron">
+  <div class="">
     <h1 class="text-center">Select A Template To Play</h1>
   </div>
   <ul class="list-group">
     <% for(var i=0; i<content.length; i++) { %>
-        <li class="list-group-item text-center">
-                <a class="bg-info" href="/play/<%= content[i]._id %>"><%= content[i].root %></a>
+                <a class="list-group-item text-center list-group-item-success" href="/play/<%= content[i]._id %>" style="color: #428bca;"><%= content[i].root %></a>
         </li>
     <% } %>
 </ul>
